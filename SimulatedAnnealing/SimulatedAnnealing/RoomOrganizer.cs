@@ -22,18 +22,18 @@ namespace SimulatedAnnealing
         private void PopulateRoomArray()
         {
             int stuOne;
-            int stuTwo ;
+            int stuTwo;
             int stuThree;
             int stuFour;
-            int j = 0;
+            int studentCount = 0;
             for (var i = 0; i < _roomArray.Length; i++)
             {
-                
-                    
-
+                _roomArray[i] = new Room(StudentArray[studentCount, 0], StudentArray[studentCount + 1,0],
+                    StudentArray[studentCount + 2, 0], StudentArray[studentCount + 3,0]);
+                studentCount = (4 * (i + 1) - 1);
             }
         }
-        
+
 
         private int CalculateTotalScore()
         {
@@ -46,17 +46,17 @@ namespace SimulatedAnnealing
             return totalRoomScore;
         }
 
-        private void printOrgaziedRoomList( double temperature,double coolingCoefficient)
+        private void printOrgaziedRoomList(double temperature, double coolingCoefficient)
         {
-            Console.WriteLine("Best score:"+ FindBestRoomScore());
-            Console.WriteLine("Worst score:"+ FindWorstRoomScore());
-            Console.WriteLine("Average score:"+ FindAverageScore());
+            Console.WriteLine("Best score:" + FindBestRoomScore());
+            Console.WriteLine("Worst score:" + FindWorstRoomScore());
+            Console.WriteLine("Average score:" + FindAverageScore());
             Console.WriteLine("Room Listing:");
             Console.WriteLine();
             for (var i = 0; i < _roomArray.Length; i++)
             {
-             Console.Write("Room:"+(i+1)+" ,has students: " +_roomArray[i].GetStudentsInRoom()); 
-             Console.WriteLine();
+                Console.Write("Room:" + (i + 1) + " ,has students: " + _roomArray[i].GetStudentsInRoom());
+                Console.WriteLine();
             }
         }
 
@@ -73,6 +73,7 @@ namespace SimulatedAnnealing
 
             return bestScore;
         }
+
         private int FindWorstRoomScore()
         {
             var worstScore = _roomArray[0].RoomScore;
@@ -89,8 +90,9 @@ namespace SimulatedAnnealing
 
         private int FindAverageScore()
         {
-           return _totalRoomScore / _numberOfRooms;
+            return _totalRoomScore / _numberOfRooms;
         }
+
         public void OrganizeRooms()
         {
             //via Simulated Annealing
@@ -137,8 +139,8 @@ namespace SimulatedAnnealing
                     oldRoomTwo = tempRoomTwo;
                     var oldTotalScore = CalculateTotalScore();
                     var stuOne = tempRoomOne.StudentsInRoom[0];
-                    var stuTwo=tempRoomOne.StudentsInRoom[1];
-                    var stuThree=tempRoomTwo.StudentsInRoom[2];
+                    var stuTwo = tempRoomOne.StudentsInRoom[1];
+                    var stuThree = tempRoomTwo.StudentsInRoom[2];
                     var stuFour = tempRoomTwo.StudentsInRoom[3];
                     tempRoomOne.StudentsInRoom[0] = stuThree;
                     tempRoomOne.StudentsInRoom[1] = stuFour;
@@ -157,7 +159,6 @@ namespace SimulatedAnnealing
                     {
                         temperature *= coolingCoefficient;
                     }
-
                 }
                 else
                 {
@@ -167,11 +168,12 @@ namespace SimulatedAnnealing
                     if (coolingSchedualAttemps % 20000 == 0)
                     {
                         temperature *= coolingCoefficient;
-                        Console.WriteLine("cooling attempts: " +coolingSchedualAttemps);
+                        Console.WriteLine("cooling attempts: " + coolingSchedualAttemps);
                     }
                 }
             }
-            printOrgaziedRoomList(temperature,coolingCoefficient);
+
+            printOrgaziedRoomList(temperature, coolingCoefficient);
         }
     }
 }
