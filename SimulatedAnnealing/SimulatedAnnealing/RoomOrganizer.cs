@@ -21,17 +21,13 @@ namespace SimulatedAnnealing
 
         private void PopulateRoomArray()
         {
-            int stuOne;
-            int stuTwo;
-            int stuThree;
-            int stuFour;
             int studentCount = 0;
             for (var i = 0; i < _roomArray.Length; i++)
             {
-                _roomArray[i] = new Room(StudentArray[studentCount, 0], StudentArray[studentCount + 1,0],
-                    StudentArray[studentCount + 2, 0], StudentArray[studentCount + 3,0]);
+                _roomArray[i] = new Room(studentCount,studentCount+1,studentCount+2,studentCount+3);
                 studentCount = (4 * (i + 1) - 1);
             }
+            
         }
 
 
@@ -40,7 +36,7 @@ namespace SimulatedAnnealing
             int totalRoomScore = 0;
             for (var i = 0; i < _roomArray.Length; i++)
             {
-                totalRoomScore = _roomArray[i].RoomScore + _totalRoomScore;
+                totalRoomScore += _roomArray[i].RoomScore ;
             }
 
             return totalRoomScore;
@@ -97,7 +93,7 @@ namespace SimulatedAnnealing
         {
             //via Simulated Annealing
             double temperature = 100000;
-            var count = 100000;
+            var count = 10000000;
             var coolingCoefficient = .95;
             var coolingSchedualChanges = 0;
             var coolingSchedualAttemps = 0;
@@ -110,10 +106,10 @@ namespace SimulatedAnnealing
             while (count >= 0 && _totalRoomScore != 0)
             {
                 count--;
-                var method = r.Next(0, 1);
+                var method = r.Next(0, 2);
                 var firstRoomChosen = r.Next(0, 49);
                 var secondRoomChosen = r.Next(0, 49);
-                if (method == 0)
+                if (method == 1)
                 {
                     var tempRoomOne = _roomArray[firstRoomChosen];
                     var tempRoomTwo = _roomArray[secondRoomChosen];
@@ -128,6 +124,8 @@ namespace SimulatedAnnealing
                     tempRoomTwo.StudentsInRoom[secondStuChosen] = tempStuOne;
                     _roomArray[firstRoomChosen] = tempRoomOne;
                     _roomArray[secondRoomChosen] = tempRoomTwo;
+                    _roomArray[firstRoomChosen].CalculateRoomScore();
+                    _roomArray[secondRoomChosen].CalculateRoomScore();
                     var newTotalScore = CalculateTotalScore();
                     chanceToChange = (float) Math.Pow(e, (-(newTotalScore - oldTotalScore) / temperature));
                 }
@@ -148,6 +146,8 @@ namespace SimulatedAnnealing
                     tempRoomTwo.StudentsInRoom[3] = stuTwo;
                     _roomArray[firstRoomChosen] = tempRoomOne;
                     _roomArray[secondRoomChosen] = tempRoomTwo;
+                    _roomArray[firstRoomChosen].CalculateRoomScore();
+                    _roomArray[secondRoomChosen].CalculateRoomScore();
                     var newTotalScore = CalculateTotalScore();
                     chanceToChange = (float) Math.Pow(e, (-(newTotalScore - oldTotalScore) / temperature));
                 }
@@ -168,7 +168,7 @@ namespace SimulatedAnnealing
                     if (coolingSchedualAttemps % 20000 == 0)
                     {
                         temperature *= coolingCoefficient;
-                        Console.WriteLine("cooling attempts: " + coolingSchedualAttemps);
+                        //Console.WriteLine("cooling attempts: " + coolingSchedualAttemps);
                     }
                 }
             }
