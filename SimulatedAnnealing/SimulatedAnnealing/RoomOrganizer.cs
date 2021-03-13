@@ -8,7 +8,7 @@ namespace SimulatedAnnealing
     public class RoomOrganizer
     {
         private static int _numberOfRooms;
-        private int _totalRoomScore = 0;
+        private int _initTotalRoomScore = 0;
         public static int[,] StudentArray { get; private set; }
         private Room[] _roomArray = new Room[50];
 
@@ -17,6 +17,7 @@ namespace SimulatedAnnealing
             StudentArray = studentArray;
             _numberOfRooms = numberOfRooms;
             PopulateRoomArray();
+            _initTotalRoomScore = CalculateTotalScore();
         }
 
         private void PopulateRoomArray()
@@ -47,6 +48,8 @@ namespace SimulatedAnnealing
             Console.WriteLine("Best score:" + FindBestRoomScore());
             Console.WriteLine("Worst score:" + FindWorstRoomScore());
             Console.WriteLine("Average score:" + FindAverageScore());
+            Console.WriteLine("First Total score: "+_initTotalRoomScore);
+            Console.WriteLine("Total score: "+CalculateTotalScore());
             Console.WriteLine("Room Listing:");
             Console.WriteLine();
             for (var i = 0; i < _roomArray.Length; i++)
@@ -86,7 +89,7 @@ namespace SimulatedAnnealing
 
         private int FindAverageScore()
         {
-            return _totalRoomScore / _numberOfRooms;
+            return _initTotalRoomScore / _numberOfRooms;
         }
 
         public void OrganizeRooms()
@@ -98,12 +101,12 @@ namespace SimulatedAnnealing
             var coolingSchedualChanges = 0;
             var coolingSchedualAttemps = 0;
             float e = (float) System.Math.E;
-            _totalRoomScore = CalculateTotalScore();
+            _initTotalRoomScore = CalculateTotalScore();
             var r = new Random();
             float chanceToChange = 0;
             Room oldRoomOne = null;
             Room oldRoomTwo = null;
-            while (count >= 0 && _totalRoomScore != 0)
+            while (count >= 0 && _initTotalRoomScore != 0)
             {
                 count--;
                 var method = r.Next(0, 2);
