@@ -94,6 +94,7 @@ namespace SimulatedAnnealing
         {
             //via Simulated Annealing
             double temperature = 100000;
+            double initTemp = temperature;
             var count = 10000000;
             var coolingCoefficient = .95;
             var coolingSchedualChanges = 0;
@@ -169,7 +170,7 @@ namespace SimulatedAnnealing
                 }
             }
 
-            printOrgaziedRoomList(temperature, coolingCoefficient);
+            printOrgaziedRoomList(initTemp, coolingCoefficient);
         }
     }
 }
