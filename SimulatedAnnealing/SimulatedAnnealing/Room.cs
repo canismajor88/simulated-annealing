@@ -17,7 +17,15 @@ namespace SimulatedAnnealing
             CalculateRoomScore();
         }
 
-        public void CalculateRoomScore()
+        public int SwapOutStudent(int stuNumber, int newStudent)
+        {
+            int previousStudentNumber = StudentsInRoom[stuNumber];
+            StudentsInRoom[stuNumber] = newStudent;
+            CalculateRoomScore();
+            return previousStudentNumber;
+        }
+
+        private void CalculateRoomScore()
         {
             RoomScore = RoomOrganizer.StudentArray[StudentsInRoom[0], StudentsInRoom[1]] +
                         RoomOrganizer.StudentArray[StudentsInRoom[0], StudentsInRoom[2]] +
@@ -26,16 +34,16 @@ namespace SimulatedAnnealing
                         RoomOrganizer.StudentArray[StudentsInRoom[1], StudentsInRoom[3]] +
                         RoomOrganizer.StudentArray[StudentsInRoom[2], StudentsInRoom[3]];
         }
+
         public string GetStudentsInRoom()
         {
-            string output="";
+            string output = "";
             for (var i = 0; i < StudentsInRoom.Length; i++)
             {
-                output+=(" "+StudentsInRoom[i]+ " ");
+                output += (" " + StudentsInRoom[i] + " ");
             }
 
             return output;
         }
     }
-    
 }

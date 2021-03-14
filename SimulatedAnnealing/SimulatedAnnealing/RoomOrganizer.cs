@@ -8,7 +8,6 @@ namespace SimulatedAnnealing
     public class RoomOrganizer
     {
         private static int _numberOfRooms;
-        private int _initTotalRoomScore = 0;
         public static int[,] StudentArray { get; private set; }
         private Room[] _roomArray = new Room[50];
 
@@ -17,7 +16,6 @@ namespace SimulatedAnnealing
             StudentArray = studentArray;
             _numberOfRooms = numberOfRooms;
             PopulateRoomArray();
-            _initTotalRoomScore = CalculateTotalScore();
         }
 
         private void PopulateRoomArray()
@@ -25,10 +23,9 @@ namespace SimulatedAnnealing
             int studentCount = 0;
             for (var i = 0; i < _roomArray.Length; i++)
             {
-                _roomArray[i] = new Room(studentCount,studentCount+1,studentCount+2,studentCount+3);
-                studentCount = (4 * (i + 1) - 1);
+                _roomArray[i] = new Room(studentCount, studentCount + 1, studentCount + 2, studentCount + 3);
+                studentCount = (4 * (i + 1));
             }
-            
         }
 
 
@@ -37,7 +34,7 @@ namespace SimulatedAnnealing
             int totalRoomScore = 0;
             for (var i = 0; i < _roomArray.Length; i++)
             {
-                totalRoomScore += _roomArray[i].RoomScore ;
+                totalRoomScore += _roomArray[i].RoomScore;
             }
 
             return totalRoomScore;
@@ -48,8 +45,6 @@ namespace SimulatedAnnealing
             Console.WriteLine("Best score:" + FindBestRoomScore());
             Console.WriteLine("Worst score:" + FindWorstRoomScore());
             Console.WriteLine("Average score:" + FindAverageScore());
-            Console.WriteLine("First Total score: "+_initTotalRoomScore);
-            Console.WriteLine("Total score: "+CalculateTotalScore());
             Console.WriteLine("Room Listing:");
             Console.WriteLine();
             for (var i = 0; i < _roomArray.Length; i++)
@@ -89,7 +84,7 @@ namespace SimulatedAnnealing
 
         private int FindAverageScore()
         {
-            return _initTotalRoomScore / _numberOfRooms;
+            return CalculateTotalScore() / _roomArray.Length;
         }
 
         public void OrganizeRooms()
@@ -101,77 +96,58 @@ namespace SimulatedAnnealing
             var coolingSchedualChanges = 0;
             var coolingSchedualAttemps = 0;
             float e = (float) System.Math.E;
-            _initTotalRoomScore = CalculateTotalScore();
+
             var r = new Random();
             float chanceToChange = 0;
-            Room oldRoomOne = null;
-            Room oldRoomTwo = null;
-            while (count >= 0 && _initTotalRoomScore != 0)
+
+            while (count>=0)
             {
                 count--;
-                var method = r.Next(0, 2);
-                var firstRoomChosen = r.Next(0, 49);
-                var secondRoomChosen = r.Next(0, 49);
-                if (method == 1)
+                var method = r.Next(0, 1);
+                var firstRoomNumber = r.Next(50);
+                var secondRoomNumber = r.Next(50);
+                var oldFirstRoom = _roomArray[firstRoomNumber];
+                var oldSecondRoom = _roomArray[secondRoomNumber];
+                var newRoomFirst = new Room(oldFirstRoom.StudentsInRoom[0], oldFirstRoom.StudentsInRoom[1],
+                    oldFirstRoom.StudentsInRoom[2], oldFirstRoom.StudentsInRoom[3]);
+                var newRoomSecond = new Room(oldSecondRoom.StudentsInRoom[0], oldSecondRoom.StudentsInRoom[1],
+                    oldSecondRoom.StudentsInRoom[2], oldSecondRoom.StudentsInRoom[3]);
+                if (oldFirstRoom != oldSecondRoom)
                 {
-                    var tempRoomOne = _roomArray[firstRoomChosen];
-                    var tempRoomTwo = _roomArray[secondRoomChosen];
-                    oldRoomOne = tempRoomOne;
-                    oldRoomTwo = tempRoomTwo;
-                    var oldTotalScore = CalculateTotalScore();
-                    var firstStuChosen = r.Next(0, 3);
-                    var secondStuChosen = r.Next(0, 3);
-                    var tempStuOne = tempRoomOne.StudentsInRoom[firstStuChosen];
-                    var tempStuTwo = tempRoomTwo.StudentsInRoom[secondStuChosen];
-                    tempRoomOne.StudentsInRoom[firstStuChosen] = tempStuTwo;
-                    tempRoomTwo.StudentsInRoom[secondStuChosen] = tempStuOne;
-                    _roomArray[firstRoomChosen] = tempRoomOne;
-                    _roomArray[secondRoomChosen] = tempRoomTwo;
-                    _roomArray[firstRoomChosen].CalculateRoomScore();
-                    _roomArray[secondRoomChosen].CalculateRoomScore();
-                    var newTotalScore = CalculateTotalScore();
-                    chanceToChange = (float) Math.Pow(e, (-(newTotalScore - oldTotalScore) / temperature));
-                }
-                else
-                {
-                    var tempRoomOne = _roomArray[firstRoomChosen];
-                    var tempRoomTwo = _roomArray[secondRoomChosen];
-                    oldRoomOne = tempRoomOne;
-                    oldRoomTwo = tempRoomTwo;
-                    var oldTotalScore = CalculateTotalScore();
-                    var stuOne = tempRoomOne.StudentsInRoom[0];
-                    var stuTwo = tempRoomOne.StudentsInRoom[1];
-                    var stuThree = tempRoomTwo.StudentsInRoom[2];
-                    var stuFour = tempRoomTwo.StudentsInRoom[3];
-                    tempRoomOne.StudentsInRoom[0] = stuThree;
-                    tempRoomOne.StudentsInRoom[1] = stuFour;
-                    tempRoomTwo.StudentsInRoom[2] = stuOne;
-                    tempRoomTwo.StudentsInRoom[3] = stuTwo;
-                    _roomArray[firstRoomChosen] = tempRoomOne;
-                    _roomArray[secondRoomChosen] = tempRoomTwo;
-                    _roomArray[firstRoomChosen].CalculateRoomScore();
-                    _roomArray[secondRoomChosen].CalculateRoomScore();
-                    var newTotalScore = CalculateTotalScore();
-                    chanceToChange = (float) Math.Pow(e, (-(newTotalScore - oldTotalScore) / temperature));
-                }
-
-                if ((float) r.NextDouble() < chanceToChange)
-                {
-                    coolingSchedualChanges++;
-                    if (coolingSchedualChanges % 2000 == 0)
+                    if (method == 0)
                     {
-                        temperature *= coolingCoefficient;
+                        var oldTotalScore = oldFirstRoom.RoomScore + oldSecondRoom.RoomScore;
+                        var randomStudentForRoomOne = r.Next(4);
+                        var randomStudentForRoomTwo = r.Next(4);
+                        var studentFormRoomOne = newRoomFirst.SwapOutStudent(randomStudentForRoomOne,
+                            newRoomSecond.StudentsInRoom[randomStudentForRoomTwo]);
+                        newRoomSecond.SwapOutStudent(randomStudentForRoomTwo, studentFormRoomOne);
+                        var newTotalScore = newRoomFirst.RoomScore + newRoomSecond.RoomScore;
+                        chanceToChange = (float) Math.Pow(e, (-(newTotalScore - oldTotalScore) / temperature));
                     }
-                }
-                else
-                {
-                    _roomArray[firstRoomChosen] = oldRoomOne;
-                    _roomArray[secondRoomChosen] = oldRoomTwo;
-                    coolingSchedualAttemps++;
-                    if (coolingSchedualAttemps % 20000 == 0)
+                    else
                     {
-                        temperature *= coolingCoefficient;
-                        //Console.WriteLine("cooling attempts: " + coolingSchedualAttemps);
+                        
+                    }
+
+                    if ((float) r.NextDouble() < chanceToChange)
+                    {
+                        _roomArray[firstRoomNumber] = newRoomFirst;
+                        _roomArray[secondRoomNumber] = newRoomSecond;
+                        if (coolingSchedualChanges % 2000 == 0&& coolingSchedualChanges!=0)
+                        {
+                            temperature *= coolingCoefficient;
+                        }
+                        coolingSchedualChanges++;
+                    }
+                    else
+                    {
+                        if (coolingSchedualAttemps % 20000 == 0&&coolingSchedualAttemps!=0)
+                        {
+                            temperature *= coolingCoefficient;
+                            //Console.WriteLine("cooling attempts: " + coolingSchedualAttemps);
+                        }
+                        coolingSchedualAttemps++;
                     }
                 }
             }
