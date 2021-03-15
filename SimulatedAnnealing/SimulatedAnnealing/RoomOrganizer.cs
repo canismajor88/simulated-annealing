@@ -1,26 +1,22 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.IO.Enumeration;
-using System.Security.Cryptography.X509Certificates;
+using System.Linq;
 
 namespace SimulatedAnnealing
 {
     public class RoomOrganizer
     {
-        private static int _numberOfRooms;
         public static int[,] StudentArray { get; private set; }
-        private Room[] _roomArray = new Room[50];
+        private readonly Room[] _roomArray = new Room[50];
 
         public RoomOrganizer(int[,] studentArray, int numberOfRooms)
         {
             StudentArray = studentArray;
-            _numberOfRooms = numberOfRooms;
             PopulateRoomArray();
         }
 
         private void PopulateRoomArray()
         {
-            int studentCount = 0;
+            var studentCount = 0;
             for (var i = 0; i < _roomArray.Length; i++)
             {
                 _roomArray[i] = new Room(studentCount, studentCount + 1, studentCount + 2, studentCount + 3);
@@ -31,13 +27,7 @@ namespace SimulatedAnnealing
 
         private int CalculateTotalScore()
         {
-            int totalRoomScore = 0;
-            for (var i = 0; i < _roomArray.Length; i++)
-            {
-                totalRoomScore += _roomArray[i].RoomScore;
-            }
-
-            return totalRoomScore;
+            return _roomArray.Sum(t => t.RoomScore);
         }
 
         private void printOrgaziedRoomList(double temperature, double coolingCoefficient)
@@ -87,19 +77,19 @@ namespace SimulatedAnnealing
 
         private int FindAverageScore()
         {
-            return CalculateTotalScore() / _roomArray.Length;
+            return  (int) _roomArray.Average(i => i.RoomScore);
         }
 
         public void OrganizeRooms()
         {
             //via Simulated Annealing
             double temperature = 100000;
-            double initTemp = temperature;
+            var initTemp = temperature;
             var count = 10000000;
             var coolingCoefficient = .95;
             var coolingSchedualChanges = 0;
             var coolingSchedualAttemps = 0;
-            float e = (float) System.Math.E;
+            var e = (float) System.Math.E;
             var progressionScore = 0;
             var r = new Random();
             float chanceToChange = 0;
