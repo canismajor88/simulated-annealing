@@ -100,11 +100,11 @@ namespace SimulatedAnnealing
             var coolingSchedualChanges = 0;
             var coolingSchedualAttemps = 0;
             float e = (float) System.Math.E;
-            var progressBar = count;
+            var progressionScore = 0;
             var r = new Random();
             float chanceToChange = 0;
 
-            while (count >= 0 && progressBar > 0)
+            while (count >= 0 && progressionScore< count)
             {
                 count--;
                 var method = r.Next(2);
@@ -149,8 +149,9 @@ namespace SimulatedAnnealing
                         {
                             temperature *= coolingCoefficient;
                         }
-
+                        
                         coolingSchedualChanges++;
+                        progressionScore = 0;
                     }
                     else
                     {
@@ -165,7 +166,7 @@ namespace SimulatedAnnealing
                     var newTotalScore = CalculateTotalScore();
                     if (oldTotalScore > newTotalScore)
                     {
-                        progressBar--;
+                        progressionScore++;
                     }
                 }
             }
