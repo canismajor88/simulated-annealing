@@ -8,7 +8,7 @@ namespace SimulatedAnnealing
         public static int[,] StudentArray { get; private set; }
         private readonly Room[] _roomArray = new Room[50];
 
-        public RoomOrganizer(int[,] studentArray, int numberOfRooms)
+        public RoomOrganizer(int[,] studentArray)
         {
             StudentArray = studentArray;
             PopulateRoomArray();
@@ -24,13 +24,12 @@ namespace SimulatedAnnealing
             }
         }
 
-
         private int CalculateTotalScore()
         {
             return _roomArray.Sum(t => t.RoomScore);
         }
 
-        private void printOrgaziedRoomList(double temperature, double coolingCoefficient)
+        private void PrintOrganizedRoomList(double temperature, double coolingCoefficient)
         {
             Console.WriteLine("Temperature: " + temperature);
             Console.WriteLine("Cooling Coefficient:" + coolingCoefficient);
@@ -49,35 +48,17 @@ namespace SimulatedAnnealing
 
         private int FindBestRoomScore()
         {
-            var bestScore = _roomArray[0].RoomScore;
-            foreach (var t in _roomArray)
-            {
-                if (bestScore > t.RoomScore)
-                {
-                    bestScore = t.RoomScore;
-                }
-            }
-
-            return bestScore;
+            return _roomArray.Min(r => r.RoomScore);
         }
 
         private int FindWorstRoomScore()
         {
-            var worstScore = _roomArray[0].RoomScore;
-            foreach (var t in _roomArray)
-            {
-                if (worstScore < t.RoomScore)
-                {
-                    worstScore = t.RoomScore;
-                }
-            }
-
-            return worstScore;
+            return _roomArray.Max(r => r.RoomScore);
         }
 
-        private int FindAverageScore()
+        private double FindAverageScore()
         {
-            return  (int) _roomArray.Average(i => i.RoomScore);
+            return _roomArray.Average(i => i.RoomScore);
         }
 
         public void OrganizeRooms()
@@ -86,15 +67,13 @@ namespace SimulatedAnnealing
             double temperature = 100000;
             var initTemp = temperature;
             var count = 10000000;
-            var coolingCoefficient = .95;
-            var coolingSchedualChanges = 0;
-            var coolingSchedualAttemps = 0;
-            var e = (float) System.Math.E;
+            const double coolingCoefficient = .95;
+            var coolingScheduleChanges = 0;
+            var coolingScheduleAttempts = 0;
             var progressionScore = 0;
             var r = new Random();
-            float chanceToChange = 0;
 
-            while (count >= 0 && progressionScore< count)
+            while (count >= 0 && progressionScore < count)
             {
                 count--;
                 var method = r.Next(2);
@@ -109,6 +88,7 @@ namespace SimulatedAnnealing
                 var oldTotalScore = CalculateTotalScore();
                 if (oldFirstRoom != oldSecondRoom)
                 {
+                    float chanceToChange = 0;
                     if (method == 0)
                     {
                         var oldScore = oldFirstRoom.RoomScore + oldSecondRoom.RoomScore;
@@ -118,7 +98,7 @@ namespace SimulatedAnnealing
                             newRoomSecond.StudentsInRoom[randomStudentForRoomTwo]);
                         newRoomSecond.SwapOutStudent(randomStudentForRoomTwo, studentFromRoomOne);
                         var newScore = newRoomFirst.RoomScore + newRoomSecond.RoomScore;
-                        chanceToChange = (float) Math.Pow(e, (-(newScore - oldScore) / temperature));
+                        chanceToChange = (float) Math.Pow((float) Math.E, (-(newScore - oldScore) / temperature));
                     }
                     else
                     {
@@ -128,29 +108,29 @@ namespace SimulatedAnnealing
                         newRoomSecond.SwapOutStudent(2, firstStudentFromRoomOne);
                         newRoomSecond.SwapOutStudent(3, secondStudentFromRoomOne);
                         var newScore = newRoomFirst.RoomScore + newRoomSecond.RoomScore;
-                        chanceToChange = (float) Math.Pow(e, (-(newScore - oldScore) / temperature));
+                        chanceToChange = (float) Math.Pow((float) Math.E, (-(newScore - oldScore) / temperature));
                     }
 
                     if ((float) r.NextDouble() < chanceToChange)
                     {
                         _roomArray[firstRoomNumber] = newRoomFirst;
                         _roomArray[secondRoomNumber] = newRoomSecond;
-                        if (coolingSchedualChanges % 2000 == 0 && coolingSchedualChanges != 0)
-                        {
-                            temperature *= coolingCoefficient;
-                        }
-                        
-                        coolingSchedualChanges++;
-                        progressionScore = 0;
-                    }
-                    else
-                    {
-                        if (coolingSchedualAttemps % 20000 == 0 && coolingSchedualAttemps != 0)
+                        if (coolingScheduleChanges % 2000 == 0 && coolingScheduleChanges != 0)
                         {
                             temperature *= coolingCoefficient;
                         }
 
-                        coolingSchedualAttemps++;
+                        coolingScheduleChanges++;
+                        progressionScore = 0;
+                    }
+                    else
+                    {
+                        if (coolingScheduleAttempts % 20000 == 0 && coolingScheduleAttempts != 0)
+                        {
+                            temperature *= coolingCoefficient;
+                        }
+
+                        coolingScheduleAttempts++;
                     }
 
                     var newTotalScore = CalculateTotalScore();
@@ -161,7 +141,7 @@ namespace SimulatedAnnealing
                 }
             }
 
-            printOrgaziedRoomList(initTemp, coolingCoefficient);
+            PrintOrganizedRoomList(initTemp, coolingCoefficient);
         }
     }
 }

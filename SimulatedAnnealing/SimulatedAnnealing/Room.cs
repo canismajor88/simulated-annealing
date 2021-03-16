@@ -1,4 +1,7 @@
-﻿using System.Linq;
+﻿using System;
+using System.Linq;
+using System.Runtime.CompilerServices;
+using System.Text;
 using static SimulatedAnnealing.RoomOrganizer;
 
 namespace SimulatedAnnealing
@@ -37,7 +40,13 @@ namespace SimulatedAnnealing
 
         public string GetStudentsInRoom()
         {
-            return StudentsInRoom.Aggregate("", (current, t) => current + (" " + t + " "));
+            var buffer = new StringBuilder();
+            foreach (var t in StudentsInRoom)
+            {
+                buffer.Append(" " + t + " ");
+            }
+
+            return buffer.ToString();
         }
     }
 }
