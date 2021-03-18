@@ -16,6 +16,7 @@ namespace SimulatedAnnealing
             StudentArray = studentArray;
             _numberOfRooms = numberOfRooms;
             PopulateRoomArray();
+
         }
 
         private void PopulateRoomArray()
@@ -85,6 +86,7 @@ namespace SimulatedAnnealing
             return worstScore;
         }
 
+
         private int FindAverageScore()
         {
             return CalculateTotalScore() / _roomArray.Length;
@@ -96,7 +98,7 @@ namespace SimulatedAnnealing
             double temperature = 100000;
             double initTemp = temperature;
             var count = 10000000;
-            var coolingCoefficient = .95;
+            var coolingCoefficient = .99;
             var coolingSchedualChanges = 0;
             var coolingSchedualAttemps = 0;
             float e = (float) System.Math.E;
@@ -104,7 +106,7 @@ namespace SimulatedAnnealing
             var r = new Random();
             float chanceToChange = 0;
 
-            while (count >= 0 && progressionScore< count)
+            while ( count >= 0 && progressionScore< count)
             {
                 count--;
                 var method = r.Next(2);
