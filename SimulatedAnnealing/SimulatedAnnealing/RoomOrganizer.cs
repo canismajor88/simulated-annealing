@@ -12,6 +12,7 @@ namespace SimulatedAnnealing
         {
             StudentArray = studentArray;
             PopulateRoomArray();
+
         }
 
         private void PopulateRoomArray()
@@ -67,13 +68,13 @@ namespace SimulatedAnnealing
             double temperature = 100000;
             var initTemp = temperature;
             var count = 10000000;
-            const double coolingCoefficient = .95;
+            const double coolingCoefficient = .99;
             var coolingScheduleChanges = 0;
             var coolingScheduleAttempts = 0;
             var progressionScore = 0;
             var r = new Random();
 
-            while (count >= 0 && progressionScore < count)
+            while ( count >= 0 && progressionScore < count)
             {
                 count--;
                 var method = r.Next(2);
