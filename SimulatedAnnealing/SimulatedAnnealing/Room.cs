@@ -1,11 +1,14 @@
 ﻿using System;
+using System.Linq;
 using System.Runtime.CompilerServices;
+using System.Text;
+using static SimulatedAnnealing.RoomOrganizer;
 
 namespace SimulatedAnnealing
 {
     public class Room
     {
-        public int[] StudentsInRoom = new int[4];
+        public readonly int[] StudentsInRoom = new int[4];
         public int RoomScore { get; private set; }
 
         public Room(int studentOne, int studentTwo, int studentThree, int studentFour)
@@ -19,7 +22,7 @@ namespace SimulatedAnnealing
 
         public int SwapOutStudent(int stuNumber, int newStudent)
         {
-            int previousStudentNumber = StudentsInRoom[stuNumber];
+            var previousStudentNumber = StudentsInRoom[stuNumber];
             StudentsInRoom[stuNumber] = newStudent;
             CalculateRoomScore();
             return previousStudentNumber;
@@ -27,23 +30,23 @@ namespace SimulatedAnnealing
 
         private void CalculateRoomScore()
         {
-            RoomScore = RoomOrganizer.StudentArray[StudentsInRoom[0], StudentsInRoom[1]] +
-                        RoomOrganizer.StudentArray[StudentsInRoom[0], StudentsInRoom[2]] +
-                        RoomOrganizer.StudentArray[StudentsInRoom[0], StudentsInRoom[3]] +
-                        RoomOrganizer.StudentArray[StudentsInRoom[1], StudentsInRoom[2]] +
-                        RoomOrganizer.StudentArray[StudentsInRoom[1], StudentsInRoom[3]] +
-                        RoomOrganizer.StudentArray[StudentsInRoom[2], StudentsInRoom[3]];
+            RoomScore = StudentArray[StudentsInRoom[0], StudentsInRoom[1]] +
+                        StudentArray[StudentsInRoom[0], StudentsInRoom[2]] +
+                        StudentArray[StudentsInRoom[0], StudentsInRoom[3]] +
+                        StudentArray[StudentsInRoom[1], StudentsInRoom[2]] +
+                        StudentArray[StudentsInRoom[1], StudentsInRoom[3]] +
+                        StudentArray[StudentsInRoom[2], StudentsInRoom[3]];
         }
 
         public string GetStudentsInRoom()
         {
-            string output = "";
-            for (var i = 0; i < StudentsInRoom.Length; i++)
+            var buffer = new StringBuilder();
+            foreach (var t in StudentsInRoom)
             {
-                output += (" " + StudentsInRoom[i] + " ");
+                buffer.Append(" " + t + " ");
             }
 
-            return output;
+            return buffer.ToString();
         }
     }
 }
