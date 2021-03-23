@@ -1,4 +1,5 @@
 ﻿using System;
+using System.IO;
 using System.Linq;
 
 namespace SimulatedAnnealing
@@ -47,6 +48,24 @@ namespace SimulatedAnnealing
             }
         }
 
+        private async void writeOrganizedRoomListToFile(double temperature, double coolingCoefficient)
+        {
+            string[] lines = new string[57];
+            lines[0] = "Temperature: " + temperature;
+            lines[1]=("Cooling Coefficient:" + coolingCoefficient);
+            lines[2]="Best score:" + FindBestRoomScore();
+            lines[3]="Worst score:" + FindWorstRoomScore();
+            lines[4]="Average score:" + FindAverageScore();
+            lines[5]=("Room Listing:");
+            lines[6] = " ";
+            for (var i = 7; i < _roomArray.Length; i++)
+            {
+                lines[i] = ("Room:" + (i + 1) + " ,has students: " + _roomArray[i].GetStudentsInRoom() +
+                            " ,room score: " + _roomArray[i].RoomScore);
+                lines[i + 1] = " ";
+            }
+            await File.WriteAllLinesAsync("SA_Output.txt", lines);
+        }
         private int FindBestRoomScore()
         {
             return _roomArray.Min(r => r.RoomScore);
@@ -65,7 +84,7 @@ namespace SimulatedAnnealing
         public void OrganizeRooms()
         {
             //via Simulated Annealing
-            double temperature = 100000;
+            double temperature = 100;
             var initTemp = temperature;
             var count = 10000000;
             const double coolingCoefficient = .99;
@@ -143,6 +162,7 @@ namespace SimulatedAnnealing
             }
 
             PrintOrganizedRoomList(initTemp, coolingCoefficient);
+            writeOrganizedRoomListToFile(initTemp,coolingCoefficient);
         }
     }
 }
